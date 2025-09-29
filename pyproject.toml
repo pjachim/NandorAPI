@@ -1,0 +1,31 @@
+[project]
+name = "nandorapi"
+version = "0.0.1"
+authors = [
+  { name="Peter Jachim", email="pjachim@outlook.com" },
+]
+description = "Relentless API client"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
+
+[build-system]
+requires = [
+  "setuptools >= 77.0.3"
+]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/pjachim/NandorAPI"
+Issues = "https://github.com/pjachim/NandorAPI/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
