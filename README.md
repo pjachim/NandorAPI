@@ -35,9 +35,7 @@ NandorAPI abstracts all of this into simple, reusable classes. You just configur
 NandorAPI is not currently available on PyPI, so you will need to install it directly from the source code.
 
 ```bash
-git clone https://github.com/your-repo/NandorAPI.git
-cd NandorAPI
-pip install -e .
+pip install nandorapi
 ```
 
 -----
