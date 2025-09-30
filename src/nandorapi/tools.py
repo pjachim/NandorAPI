@@ -1,4 +1,4 @@
-import os, datetime
+import os, datetime, time
 
 class Paging:
     """
@@ -145,14 +145,14 @@ class Output:
         self.i = 0
 
         self.path_template = os.path.join(
-            folder_path + [output_name]
+            *folder_path, output_name
         )
 
         self._make_save_location()
 
     def _make_save_location(self):
         folder, _ = os.path.split(self.path_template)
-        folder = self._date_format(folder)
+        folder = self._format_paths(folder)
 
         if os.path.exists(folder) and self.overwrite_safe_mode:
             raise FileExistsError(f'Path {folder} already exists, please update the folder path and try again.')
@@ -167,22 +167,42 @@ class Output:
     def _make_path(self) -> str:
         path = self.path_template
 
-        path = self._date_format(path)
-        path = self._index_format(path)
+        path = self._format_paths(path)
 
         return path
 
-    def _date_format(self, path: str) -> str:
+    def _format_paths(self, path: str) -> str:
+        format_options = {}
+
         if '{date}' in path:
-            date = datetime.datetime.now().strftime(self.date_format)
-            path = path.format(index = self.i)
+            format_options['date'] = datetime.datetime.now().strftime(self.date_format)
+
+        if '{index}' in path:
+            format_options['index'] = str(self.i).zfill(self.index_length)
+            self.i += 1
+        
+        path = path.format(**format_options)
 
         return path
     
-    def _index_format(self, path: str) -> str:
-        if '{index}' in self.path_template:
-            formatted_index = str(self.i).zfill(self.index_length)
-            path = path.format(index = formatted_index)
-            self.i += 1
+class Timeout:
+    def __init__(
+        self,
+        pause_func = None,
+        pause_seconds: int | None = None,
+        **pause_kwargs
+    ):
+        if not (pause_func or pause_seconds):
+            raise AttributeError('pause_func or pause_seconds must be defined.')
+        
+        self.pause_func = pause_func
+        self.pause_seconds = pause_seconds
+        self.pause_kwargs = pause_kwargs
 
-        return path
+    def pause(self):
+        if self.pause_seconds:
+            time.sleep(self.pause_seconds)
+
+        else:
+            pause = self.pause_func(**self.pause_kwargs)
+
