@@ -93,41 +93,30 @@ class EndConditions:
     def __init__(
             self,
             max_queries: int | None = 1_000,
-            no_results_path: list[str] = []
+            end_date: datetime.datetime = datetime.datetime.now() + datetime.timedelta(days=1)
         ):
         self.max_queries = max_queries
-        self.no_results_path = no_results_path
+        self.end_date = end_date
 
-        self.current_state
-        self.i = 0
+        self.i = -1 # So first state update makes this 0
 
     def _update_state(self):
         self.i += 1
+        self.now = datetime.datetime.now()
 
-    def _conditions_met(self, query) -> bool:
+    def _keep_querying(self, query) -> bool:
         self._update_state()
 
-        if self.no_results_path:
-            if self._no_results_condition(query):
-                return True
-            
-        if self.max_queries:
-            return self.i >= self.max_queries
-
-    def _no_results_condition(self, query) -> bool:
-        for key in self.no_results_path:
-            try:
-                query = query.get(key)
-            except KeyError:
-                pass
-
-        if query:
-            return True
-        else:
+        if self.i >= self.max_queries:
             return False
+        
+        if self.now >= self.end_date:
+            return False
+        
+        return True
 
     def __bool__(self) -> bool:
-        return self._conditions_met()
+        return self._keep_querying()
 
 class Output:
     def __init__(
