@@ -52,7 +52,7 @@ class Client:
                 **page
             )
 
-            r = requests.get(
+            r: requests.Response = requests.get(
                 self.url,
                 headers=header
             )
@@ -61,11 +61,7 @@ class Client:
             raise NotImplementedError()
         
         self.output.write_bytes(r.content)
-
-        if self.end_conditions.check_if_met():
-            self.still_running = False
-        
         self.timeout.pause()
 
     def __bool__(self):
-        return self.still_running
+        return bool(self.end_conditions)
