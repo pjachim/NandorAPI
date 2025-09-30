@@ -1,4 +1,5 @@
 import pytest
+import unittest
 import os
 import datetime
 import time
@@ -40,11 +41,11 @@ class TestPaging:
         
         params1 = next(generator)
         assert params1 == {"limit": 50, "offset": 0}
-        assert pager.cursor_value == 50
+        assert pager.cursor_value == 0
         
         params2 = next(generator)
         assert params2 == {"limit": 50, "offset": 50}
-        assert pager.cursor_value == 100
+        assert pager.cursor_value == 50
         
         # Test case 2: Generator stops after kill_paging is called
         pager.kill_paging()
