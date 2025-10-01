@@ -151,15 +151,14 @@ class TestOutput:
 
     def test_format_paths(self):
         """Test the path formatting logic."""
-        output = Output(index_length=3, date_format='%Y%m%d', folder_path=['temp'])
-        
+        output = Output(index_length=3, date_format='%Y%m%d', folder_path=['temp'], overwrite_safe_mode=False)
+        today = datetime.datetime.now()
+
         # Test case 1: Path with both date and index
         path_template = 'downloads/{date}/file_{index}.txt'
-        with patch('datetime.datetime') as mock_dt:
-            mock_dt.now.return_value = datetime.datetime(2025, 1, 15)
-            formatted_path = output._format_paths(path_template)
-            assert formatted_path == 'downloads/20250115/file_000.txt'
-            assert output.i == 1
+        formatted_path = output._format_paths(path_template)
+        assert formatted_path == today.strftime('downloads/%Y%m%d/file_000.txt')
+        assert output.i == 1
             
         # Test case 2: Path with only index
         path_template_index = 'data_{index}.csv'
@@ -169,11 +168,9 @@ class TestOutput:
 
         # Test case 3: Path with only date
         path_template_date = 'reports/{date}/report.pdf'
-        with patch('datetime.datetime') as mock_dt:
-            mock_dt.now.return_value = datetime.datetime(2025, 2, 20)
-            formatted_path_date = output._format_paths(path_template_date)
-            assert formatted_path_date == 'reports/20250220/report.pdf'
-            assert output.i == 2 # Index should not have incremented
+        formatted_path_date = output._format_paths(path_template_date)
+        assert formatted_path_date == today.strftime('reports/%Y%m%d/report.pdf')
+        assert output.i == 2 # Index should not have incremented
 
     def test_write_bytes(self, tmp_path):
         """Test the write_bytes method."""
