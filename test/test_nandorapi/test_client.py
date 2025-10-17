@@ -5,8 +5,7 @@ import requests
 import os
 import datetime
 from nandorapi import tools
-from nandorapi.client import Client # Assuming Client class is in a file named your_module.py
-
+from nandorapi.client import Client
 
 class TestClient:
     """Tests the Client class's core functionality."""
@@ -26,7 +25,8 @@ class TestClient:
             url='http://test.url',
             end_conditions=mock_dependencies['end_conditions'],
             pager=mock_dependencies['pager'],
-            query={'key': 'value'}
+            query={'key': 'value'},
+            output=tools.Output(overwrite_safe_mode=False)
         )
 
         assert client.url == 'http://test.url'
