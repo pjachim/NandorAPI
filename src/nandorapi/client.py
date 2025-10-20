@@ -5,7 +5,7 @@ import requests, logging
 from typing import Dict, Any, Union, Optional
 from nandorapi import tools
 
-logger = logging.basicConfig(__name__)
+logger = logging.getLogger(name = __name__)
 
 class Client:
     """
@@ -127,16 +127,17 @@ class Client:
 
         if not self.payload:
             # Combine the static query with the dynamic paging parameters
-            header: Dict[str, Any] = {
+            self.header: Dict[str, Any] = {
                 **self.query,
-                **page
+                **page,
+                **self.login_details
             }
 
             # Send the GET request with the combined parameters
             logger.debug('Doing a GET request.')
             r: requests.Response = requests.get(
                 self.url,
-                headers=header
+                headers=self.header
             )
         else:
             # The logic for handling POST requests with a payload would go here
@@ -146,6 +147,10 @@ class Client:
         self.output.write_bytes(r.content)
         # Pause for the specified duration or according to the custom function
         self.timeout.pause()
+
+    def login(self, url, **login_args):
+        self.login_response = requests.get(url, **login_args)
+        self.login_details = self.login_details.json()
 
     def __bool__(self) -> bool:
         """
