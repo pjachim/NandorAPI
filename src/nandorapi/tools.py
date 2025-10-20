@@ -78,14 +78,14 @@ class Paging:
         self.max_results_value: int = max_results_value
 
         if (cursor_param is not None) and (cursor_value is not None):
-            self.cursor_value: int = cursor_value
-            self.cursor_param: str = cursor_param
+            self.state_value: int = cursor_value
+            self.state_param: str = cursor_param
             self.cursor_mode = True
             self.page_mode = False
 
         elif (page_param is not None) and (page_value is not None):
-            self.page_value: int = page_value
-            self.page_param: str = page_param
+            self.state_value: int = page_value
+            self.state_param: str = page_param
             self.page_mode = True
             self.cursor_mode = False
 
@@ -110,32 +110,16 @@ class Paging:
             A dictionary containing the query parameters for the current page,
             including the cursor and max results (if specified).
         """
-        if self.cursor_mode:
-            self._cursor_paging()
-
-        elif self.page_mode:
-            self._page_paging()
-
-    def _cursor_paging(self):
         while self.live_query:
             # Update the state dictionary with the current cursor value
-            self.state_dict[self.cursor_param] = str(self.cursor_value)
+            self.state_dict[self.state_param] = str(self.state_value)
 
             yield self.state_dict
 
-            # Increment the cursor for the next page
-            self.cursor_value += self.max_results_value
-
-
-    def _page_paging(self):
-        while self.live_query:
-            # Update the state dictionary with the current page value
-            self.state_dict[self.page_param] = str(self.page_value)
-
-            yield self.state_dict
-
-            # Increment for the next page
-            self.page_value += 1
+            if self.cursor_mode:
+                self.state_value += self.max_results_value
+            elif self.page_mode:
+                self.state_value += 1
 
 
     def kill_paging(self) -> None:
