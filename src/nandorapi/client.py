@@ -87,7 +87,7 @@ class Client:
         query: Dict[str, Any],
         payload: Optional[Dict[str, Any]] = None,
         timeout: Union[tools.Timeout, int, float] = tools.Timeout(pause_seconds=15),
-        output: tools.Output = tools.Output()
+        output: tools.Output = tools.Output(overwrite_safe_mode=False)
     ) -> None:
         """Initializes the Client object with all necessary components."""
         self.url: str = url
