@@ -93,7 +93,7 @@ class Client:
         """Initializes the Client object with all necessary components."""
         self.url: str = url
         self.end_conditions: tools.EndConditions = end_conditions
-        self.pager: tools.Paging = pager
+        self.pager: tools.Paging = pager.page() # Setting up the pager iterations by calling page
         self.query: Dict[str, Any] = query
         self.payload: Optional[Dict[str, Any]] = payload
         self.output: tools.Output = output
@@ -119,7 +119,7 @@ class Client:
         """
         # Get the next set of pagination parameters from the pager generator
         try:
-            page: Dict[str, Any] = next(self.pager.page())
+            page: Dict[str, Any] = next(self.pager)
         except StopIteration:
             # If the pager is exhausted, nothing to do. The `__bool__` check
             # should prevent this, but it's good practice to handle it.
