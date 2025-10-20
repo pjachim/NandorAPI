@@ -59,10 +59,12 @@ class Paging:
     """
     def __init__(
         self,
-        cursor_param: str,
-        max_results_value: int,
-        cursor_value: int = 0,
-        max_results_param: Optional[str] = None
+        cursor_param: str = None,
+        cursor_value: int = None,
+        max_results_value: int = None,
+        max_results_param: Optional[str] = None,
+        page_param: str = None,
+        page_value: int = None
     ) -> None:
         """
         Initializes the Paging object with parameters for cursor-based pagination.
@@ -70,12 +72,26 @@ class Paging:
         self.state_dict: Dict[str, int] = {}
 
         # If a max results parameter name is provided, add it to the state dictionary
-        if max_results_param:
-            self.state_dict[max_results_param] = max_results_value
-        
-        self.cursor_value: int = cursor_value
-        self.cursor_param: str = cursor_param
+        if max_results_param is not None:
+            self.state_dict[max_results_param] = str(max_results_value)
+
         self.max_results_value: int = max_results_value
+
+        if (cursor_param is not None) and (cursor_value is not None):
+            self.cursor_value: int = cursor_value
+            self.cursor_param: str = cursor_param
+            self.cursor_mode = True
+            self.page_mode = False
+
+        elif (page_param is not None) and (page_value is not None):
+            self.page_value: int = page_value
+            self.page_param: str = page_param
+            self.page_mode = True
+            self.cursor_mode = False
+
+        else:
+            raise ValueError('Either cursor_value and cursor_param or page_value and page_param must be provided.')
+
         # Flag to control the generator loop
         self.live_query: bool = True
 
@@ -94,15 +110,33 @@ class Paging:
             A dictionary containing the query parameters for the current page,
             including the cursor and max results (if specified).
         """
+        if self.cursor_mode:
+            self._cursor_paging()
+
+        elif self.page_mode:
+            self._page_paging()
+
+    def _cursor_paging(self):
         while self.live_query:
             # Update the state dictionary with the current cursor value
-            self.state_dict[self.cursor_param] = self.cursor_value
-            
-            # Yield the dictionary of current page parameters
+            self.state_dict[self.cursor_param] = str(self.cursor_value)
+
             yield self.state_dict
 
             # Increment the cursor for the next page
             self.cursor_value += self.max_results_value
+
+
+    def _page_paging(self):
+        while self.live_query:
+            # Update the state dictionary with the current page value
+            self.state_dict[self.page_param] = str(self.page_value)
+
+            yield self.state_dict
+
+            # Increment for the next page
+            self.page_value += 1
+
 
     def kill_paging(self) -> None:
         """
