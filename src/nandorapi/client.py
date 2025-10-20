@@ -1,10 +1,11 @@
 import os
 import datetime
 import time
-import requests
+import requests, logging
 from typing import Dict, Any, Union, Optional
 from nandorapi import tools
 
+logger = logging.basicConfig(__name__)
 
 class Client:
     """
@@ -132,6 +133,7 @@ class Client:
             }
 
             # Send the GET request with the combined parameters
+            logger.debug('Doing a GET request.')
             r: requests.Response = requests.get(
                 self.url,
                 headers=header
