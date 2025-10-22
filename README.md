@@ -32,7 +32,7 @@ NandorAPI abstracts all of this into simple, reusable classes. You just configur
 
 ## Installation
 
-NandorAPI is not currently available on PyPI, so you will need to install it directly from the source code.
+NandorAPI is currently available on PyPI, so you can install it like so:
 
 ```bash
 pip install nandorapi
@@ -113,6 +113,42 @@ while client:
     client.run()
 
 print("Data retrieval complete.")
+```
+
+-----
+
+## Familiars
+Familiars are dumb, memory intensive, brittle processes that you can run collecting your data to get it into a more useful format. They are not intended to be as powerful as the core client processes, but are intended to get you from a dataset that you have collected, to something put together. 
+
+A couple examples include:
+ - The manager (coming soon), gives you an easy interface for managing your familiars.
+ - The flattener (coming soon), takes JSON structures and flattens them, and writes them to one of a variety of different formats including databases.
+ - The analyzer (coming soon), performs a rote exploratory analysis of your outputs to give you some ideas for how to proceed.
+ - The organizer (coming soon), writes your records to a mongodb database (possibly creating one) to give you a queryable interface for your unstructured records.
+ - The diagrammer (coming down the road), creates mermaid diagrams of your database.
+ - The documenter (coming down the road), creates AI-generated documentation of your database attributes.
+ - The questioner (coming further down the road), creates a RAG solution on your database, giving you the flexibility to query your scraped dataset.
+
+```{python}
+from nandorapi.familiars.manager import Manager
+from nandorapi.familiars import flattener, documenter
+
+manager = Manager()
+
+manager.install(
+    familiar=
+    expose_outputs=['db_connection']
+)
+
+manager.install(
+    familiar=
+    inputs={
+        '':''
+    }
+)
+
+# Now run everything
+manager.run()
 ```
 
 -----
